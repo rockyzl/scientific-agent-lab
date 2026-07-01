@@ -1,5 +1,9 @@
 # scientific-agent-lab
 
+[![CI](https://github.com/rockyzl/scientific-agent-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/rockyzl/scientific-agent-lab/actions/workflows/ci.yml)
+&nbsp;![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)
+&nbsp;![License: MIT](https://img.shields.io/badge/license-MIT-green)
+
 **An open-source framework for evidence-grounded scientific agents — with replayable
 evaluation and human review as the core spine.**
 
