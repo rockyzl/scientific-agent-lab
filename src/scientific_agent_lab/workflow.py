@@ -27,15 +27,22 @@ from .skills.uncertainty import overall_confidence
 from .version import __version__
 
 
+def _sha16(obj) -> str:
+    return hashlib.sha256(json.dumps(obj, sort_keys=True, default=str).encode()).hexdigest()[:16]
+
+
 def _reproducibility(
-    inp: ScientificInput, steps: list[dict], evidence: list[EvidenceItem]
+    inp: ScientificInput,
+    steps: list[dict],
+    evidence: list[EvidenceItem],
+    report_dict: dict,
 ) -> ReproducibilityRecord:
-    payload = json.dumps(asdict(inp), sort_keys=True, default=str).encode()
-    skills = ["literature_stub:mock"]
+    skills = [f"literature_stub@{__version__}:mock"]
     if not inp.observations and inp.image_ref:
-        skills.insert(0, "image_stub:mock")
+        skills.insert(0, f"image_stub@{__version__}:mock")
     return ReproducibilityRecord(
-        input_sha256=hashlib.sha256(payload).hexdigest()[:16],
+        input_sha256=_sha16(asdict(inp)),
+        report_sha256=_sha16(report_dict),
         package_version=__version__,
         python_version=platform.python_version(),
         skills_used=skills,
@@ -108,10 +115,11 @@ def run_workflow(inp: ScientificInput) -> tuple[ScientificAgentReport, ReplayRec
         confidence_level=confidence,
         limitations=_LIMITATIONS,
     )
+    report_dict = report.to_dict()
     replay = ReplayRecord(
         input=asdict(inp),
         steps=steps,
-        report=report.to_dict(),
-        reproducibility=_reproducibility(inp, steps, evidence),
+        report=report_dict,
+        reproducibility=_reproducibility(inp, steps, evidence, report_dict),
     )
     return report, replay

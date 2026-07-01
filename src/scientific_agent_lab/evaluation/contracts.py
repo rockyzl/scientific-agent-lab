@@ -14,6 +14,9 @@ from .metrics import score
 
 _HEDGES = ("possible", "requires validation", "tentative", "based on", "may ")
 
+# Bump when the contract set changes, so evaluation results stay comparable over time.
+CONTRACT_SET_VERSION = "2"
+
 
 def evaluate(report: ScientificAgentReport, replay: ReplayRecord) -> EvaluationResult:
     checks: list[dict] = []
@@ -54,11 +57,17 @@ def evaluate(report: ScientificAgentReport, replay: ReplayRecord) -> EvaluationR
     add("replay_record_contains_intermediate_steps", len(replay.steps) >= 3, f"{len(replay.steps)} steps")
 
     repro = replay.reproducibility
-    reproducible = bool(repro.input_sha256) and bool(repro.python_version) and repro.n_steps >= 3
+    reproducible = (
+        bool(repro.input_sha256)
+        and bool(repro.report_sha256)
+        and bool(repro.python_version)
+        and repro.n_steps >= 3
+    )
     add(
         "result_is_reproducible",
         reproducible,
-        f"input_sha256={repro.input_sha256 or '(missing)'}, py={repro.python_version or '(missing)'}, steps={repro.n_steps}",
+        f"input={repro.input_sha256 or '(missing)'}, report={repro.report_sha256 or '(missing)'}, "
+        f"py={repro.python_version or '(missing)'}, steps={repro.n_steps}",
     )
 
-    return score(checks)
+    return score(checks, CONTRACT_SET_VERSION)

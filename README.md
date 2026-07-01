@@ -124,6 +124,20 @@ xrd_complete_accept                  9/9        0   0.89          accept    PASS
 Each case carries expected properties (missing count, allowed next action, confidence
 band); a case passes only if it meets them **and** all reasoning contracts.
 
+## Reproducibility
+
+Every run ships a **reproducibility record** (input hash, report content hash, package &
+Python versions, skill versions, evidence sources, step count) and the evaluation result
+is **versioned** (`contract_set_version`). Prove a result is re-runnable:
+
+```bash
+PYTHONPATH=src python -m scientific_agent_lab.cli verify -i examples/materials_demo/sample_input.json
+# report_sha256  run1=1ba1e3321f320915  run2=1ba1e3321f320915
+# REPRODUCIBLE ✓
+```
+
+Same input → identical report hash. Models change; this guarantee shouldn't.
+
 ## How this fits my other work
 
 `scientific-agent-lab` is deliberately the **public integration + evaluation layer**, not

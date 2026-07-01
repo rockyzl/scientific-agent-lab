@@ -55,6 +55,18 @@ def _benchmark(args: argparse.Namespace) -> int:
     return 0 if all(is_fully_passing(r) for r in results) else 1
 
 
+def _verify(args: argparse.Namespace) -> int:
+    """Run the same input twice and confirm the report content hash is identical."""
+    inp = ScientificInput.from_dict(json.loads(Path(args.input).read_text()))
+    _, r1 = run_workflow(inp)
+    _, r2 = run_workflow(inp)
+    h1, h2 = r1.reproducibility.report_sha256, r2.reproducibility.report_sha256
+    ok = bool(h1) and h1 == h2
+    print(f"report_sha256  run1={h1}  run2={h2}")
+    print("REPRODUCIBLE ✓" if ok else "NOT REPRODUCIBLE ✗")
+    return 0 if ok else 1
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="scientific-agent-lab",
@@ -70,6 +82,10 @@ def main(argv: list[str] | None = None) -> int:
     bench = sub.add_parser("benchmark", help="run the evaluation benchmark over a cases folder")
     bench.add_argument("--cases", default="benchmark/cases", help="folder of case JSON files")
     bench.set_defaults(func=_benchmark)
+
+    verify = sub.add_parser("verify", help="run an input twice and check the report hash is identical")
+    verify.add_argument("--input", "-i", required=True, help="path to a ScientificInput JSON")
+    verify.set_defaults(func=_verify)
 
     args = parser.parse_args(argv)
     return args.func(args)

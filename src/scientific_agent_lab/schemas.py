@@ -173,6 +173,7 @@ class EvaluationResult:
     score: float = 0.0
     passed: int = 0
     total: int = 0
+    contract_set_version: str = "1"  # versioned so results stay comparable over time
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -184,6 +185,7 @@ class ReproducibilityRecord:
     and science. If someone cannot reproduce it, it is not a scientific result."""
 
     input_sha256: str = ""
+    report_sha256: str = ""  # content hash of the report — stable across re-runs
     package_version: str = ""
     python_version: str = ""
     skills_used: list[str] = field(default_factory=list)
