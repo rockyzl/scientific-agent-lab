@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "scientific-agent-lab"
+version = "0.1.0"
+description = "Evidence-grounded scientific agents with replayable evaluation and human review."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Lu Zhang" }]
+keywords = [
+  "ai-for-science",
+  "autonomous-science",
+  "scientific-agents",
+  "agent-evaluation",
+  "llm",
+  "evidence-grounded",
+]
+# Zero runtime dependencies on purpose: clone and run, no install friction.
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+
+[project.scripts]
+scientific-agent-lab = "scientific_agent_lab.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/rockyzl/scientific-agent-lab"
+
+[tool.setuptools.packages.find]
+where = ["src"]

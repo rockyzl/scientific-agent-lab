@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.eggs/
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+
+# Tooling
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+
+# Generated demo outputs (regenerate with the CLI)
+outputs/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
