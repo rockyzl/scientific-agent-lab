@@ -6,6 +6,9 @@ so the whole reasoning trace is auditable and re-playable.
 
 from __future__ import annotations
 
+import hashlib
+import json
+import platform
 from dataclasses import asdict
 
 from .agents.evidence_agent import gather
@@ -13,8 +16,34 @@ from .agents.hypothesis_agent import hypothesize
 from .agents.observation_agent import observe
 from .agents.planner_agent import plan
 from .agents.reviewer_agent import review
-from .schemas import ReplayRecord, ScientificAgentReport, ScientificInput
+from .schemas import (
+    EvidenceItem,
+    ReplayRecord,
+    ReproducibilityRecord,
+    ScientificAgentReport,
+    ScientificInput,
+)
 from .skills.uncertainty import overall_confidence
+from .version import __version__
+
+
+def _reproducibility(
+    inp: ScientificInput, steps: list[dict], evidence: list[EvidenceItem]
+) -> ReproducibilityRecord:
+    payload = json.dumps(asdict(inp), sort_keys=True, default=str).encode()
+    skills = ["literature_stub:mock"]
+    if not inp.observations and inp.image_ref:
+        skills.insert(0, "image_stub:mock")
+    return ReproducibilityRecord(
+        input_sha256=hashlib.sha256(payload).hexdigest()[:16],
+        package_version=__version__,
+        python_version=platform.python_version(),
+        skills_used=skills,
+        evidence_sources=sorted({e.source for e in evidence if e.source}),
+        n_steps=len(steps),
+        seed=None,  # deterministic in v0
+        created_utc="",  # stamped by the CLI when written to disk
+    )
 
 _LIMITATIONS = (
     "This is a research prototype, not a validated scientific decision system. "
@@ -79,5 +108,10 @@ def run_workflow(inp: ScientificInput) -> tuple[ScientificAgentReport, ReplayRec
         confidence_level=confidence,
         limitations=_LIMITATIONS,
     )
-    replay = ReplayRecord(input=asdict(inp), steps=steps, report=report.to_dict())
+    replay = ReplayRecord(
+        input=asdict(inp),
+        steps=steps,
+        report=report.to_dict(),
+        reproducibility=_reproducibility(inp, steps, evidence),
+    )
     return report, replay

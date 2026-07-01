@@ -4,15 +4,21 @@
 &nbsp;![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)
 &nbsp;![License: MIT](https://img.shields.io/badge/license-MIT-green)
 
-**An open-source framework for evidence-grounded scientific agents — with replayable
-evaluation and human review as the core spine.**
+**scientific-agent-lab is not another scientific AI assistant. It is an evaluation,
+reasoning, and reproducibility layer for scientific AI systems.**
 
-Most scientific-agent demos focus on *generating an answer*. This project focuses on the
-harder, more useful thing: making scientific reasoning **auditable, replayable,
-reviewable, and testable**. An agent may organize a workflow, but every conclusion must
-separate **evidence** from **assumptions**, keep **uncertainty** explicit, name what
-evidence is **missing**, recommend a **justified next action**, and leave a
-**replayable trace** a human scientist can check.
+Scientific workbenches and foundation models (Claude Science, BioNeMo, GPT, …) help
+scientists *produce* results. This project sits one layer below them and asks the
+question they mostly leave open: **when can you trust the result?** It makes scientific
+reasoning **auditable, replayable, reviewable, reproducible, and testable**.
+
+> Scientific agents should not only generate hypotheses; they should produce auditable
+> reasoning artifacts that can be replayed, reviewed, and evaluated.
+
+An agent may organize a workflow, but every conclusion must separate **evidence** from
+**assumptions**, keep **uncertainty** explicit, name what evidence is **missing**,
+recommend a **justified next action**, leave a **replayable trace**, and ship a
+**reproducibility record** a human scientist can re-run.
 
 > Status: early research prototype (v0.1). Not a validated scientific decision system.
 > Runs fully offline — no API keys, no GPU, zero third-party dependencies.
@@ -26,6 +32,23 @@ acceptance contracts. This project brings the same discipline to scientific disc
 
 The differentiator is **evaluation-first**: the repo ships an evaluation harness that
 scores whether an agent *reasoned responsibly*, not just whether it sounded confident.
+
+## Where this sits
+
+```
+Foundation models          Claude · GPT · Gemini
+        │
+Scientific workbenches      Claude Science · BioNeMo        ← produce results
+        │
+Scientific workflow         agents · tool use · lab integration
+        │
+Scientific reasoning        evidence · uncertainty · human review   ◄─ scientific-agent-lab
+        │
+Scientific evaluation       golden sets · replay · acceptance contracts ◄─ scientific-agent-lab
+```
+
+Models change; **evaluation and reproducibility don't** — the same way `pytest` and CI
+outlive any single language version. This project claims the bottom two layers.
 
 ## The workflow (v0 spine)
 
@@ -78,9 +101,28 @@ The harness checks whether a report reasoned responsibly:
 6. `recommendations_are_not_overclaimed` — hedged language; no `accept` while evidence is missing
 7. `confidence_level_is_present`
 8. `replay_record_contains_intermediate_steps`
+9. `result_is_reproducible` — a reproducibility record (input hash, versions, evidence sources, steps) is attached
 
 An overclaimed report (e.g. `accept` despite a missing measurement) **fails** — see
 `tests/test_evaluation.py`.
+
+## Benchmark
+
+Run the agent over a folder of scientific cases and score how well it *reasoned*:
+
+```bash
+PYTHONPATH=src python -m scientific_agent_lab.cli benchmark --cases benchmark/cases
+```
+
+```
+case                           contracts  missing   conf     next_action  expect
+rfb_catholyte_incomplete             9/9        2   0.29   measure_again    PASS
+microscopy_phase_id_incomplete       9/9        2    0.3   measure_again    PASS
+xrd_complete_accept                  9/9        0   0.89          accept    PASS
+```
+
+Each case carries expected properties (missing count, allowed next action, confidence
+band); a case passes only if it meets them **and** all reasoning contracts.
 
 ## How this fits my other work
 

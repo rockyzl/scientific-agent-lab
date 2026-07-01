@@ -20,8 +20,11 @@ def test_good_report_passes_all_contracts():
     inp = ScientificInput.from_dict(json.loads(SAMPLE.read_text()))
     report, replay = run_workflow(inp)
     result = evaluate(report, replay)
-    assert result.passed == result.total == 8
+    assert result.passed == result.total == 9
     assert result.score == 1.0
+    names_passed = {c["name"] for c in result.contracts if c["passed"]}
+    assert "result_is_reproducible" in names_passed
+    assert replay.reproducibility.input_sha256  # provenance present
 
 
 def test_overclaimed_report_fails_a_contract():

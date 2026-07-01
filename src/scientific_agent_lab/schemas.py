@@ -179,11 +179,30 @@ class EvaluationResult:
 
 
 @dataclass
+class ReproducibilityRecord:
+    """Everything needed to re-run and audit a result — the difference between a demo
+    and science. If someone cannot reproduce it, it is not a scientific result."""
+
+    input_sha256: str = ""
+    package_version: str = ""
+    python_version: str = ""
+    skills_used: list[str] = field(default_factory=list)
+    evidence_sources: list[str] = field(default_factory=list)
+    n_steps: int = 0
+    seed: int | None = None
+    created_utc: str = ""
+
+    def to_dict(self) -> dict:
+        return asdict(self)
+
+
+@dataclass
 class ReplayRecord:
     input: dict
     steps: list[dict]
     report: dict
     created_utc: str = ""
+    reproducibility: ReproducibilityRecord = field(default_factory=ReproducibilityRecord)
 
     def to_dict(self) -> dict:
         return asdict(self)

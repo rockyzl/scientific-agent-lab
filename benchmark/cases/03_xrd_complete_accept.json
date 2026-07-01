@@ -1,0 +1,16 @@
+{
+  "id": "xrd_complete_accept",
+  "question": "Is the sample single-phase anatase TiO2?",
+  "domain": "materials",
+  "observations": [
+    {"name": "xrd_peak_set", "value": "anatase-consistent", "kind": "measurement", "confidence": 0.9, "source": "xrd"},
+    {"name": "composition", "value": "TiO2", "kind": "measurement", "confidence": 0.88, "source": "eds"},
+    {"name": "reference_match", "value": "JCPDS 21-1272", "kind": "literature", "confidence": 0.9, "source": "pdf_database"}
+  ],
+  "required": [
+    {"name": "xrd_peak_set", "kind": "measurement", "why": "phase fingerprint"},
+    {"name": "composition", "kind": "measurement", "why": "confirm stoichiometry"},
+    {"name": "reference_match", "kind": "literature", "why": "match a reference diffraction pattern"}
+  ],
+  "expect": {"max_missing": 0, "next_action_in": ["accept"], "min_confidence": 0.8}
+}

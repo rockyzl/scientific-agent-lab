@@ -1,0 +1,16 @@
+{
+  "id": "rfb_catholyte_incomplete",
+  "question": "Is this redox-active molecule a viable nonaqueous redox-flow-battery catholyte, and what should I measure next?",
+  "domain": "electrochemistry",
+  "observations": [
+    {"name": "redox_potential_V", "value": 0.85, "kind": "measurement", "confidence": 0.9, "source": "cyclic_voltammetry"},
+    {"name": "solubility_M", "value": 1.2, "kind": "prediction", "confidence": 0.5, "source": "group_contribution_model"}
+  ],
+  "required": [
+    {"name": "redox_potential_V", "kind": "measurement", "why": "sets the accessible cell-voltage window"},
+    {"name": "solubility_M", "kind": "measurement", "why": "determines achievable energy density"},
+    {"name": "cycling_stability", "kind": "measurement", "why": "capacity fade over cycles decides real viability"},
+    {"name": "reference_match", "kind": "literature", "why": "compare against known catholytes before committing"}
+  ],
+  "expect": {"min_missing": 2, "next_action_in": ["measure_again"], "max_confidence": 0.5}
+}

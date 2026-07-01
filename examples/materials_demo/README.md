@@ -20,4 +20,4 @@ What to notice in the output ([`sample_output.md`](sample_output.md)):
 - Confidence is **low (0.29)** because required evidence is missing.
 - The recommended next action is `measure_again` (cycling stability), not `accept`.
 - A human-review checklist is produced.
-- All 8 evaluation contracts pass — the agent reasoned responsibly.
+- All 9 evaluation contracts pass — the agent reasoned responsibly.

@@ -18,9 +18,9 @@ from .schemas import (
     ScientificInput,
     UncertaintyNote,
 )
+from .schemas import ReplayRecord, ReproducibilityRecord
 from .workflow import run_workflow
-
-__version__ = "0.1.0"
+from .version import __version__
 
 __all__ = [
     "ScientificInput",

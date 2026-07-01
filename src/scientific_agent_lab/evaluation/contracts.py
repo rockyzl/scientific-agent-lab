@@ -53,4 +53,12 @@ def evaluate(report: ScientificAgentReport, replay: ReplayRecord) -> EvaluationR
     add("confidence_level_is_present", 0.0 <= report.confidence_level <= 1.0, f"confidence={report.confidence_level}")
     add("replay_record_contains_intermediate_steps", len(replay.steps) >= 3, f"{len(replay.steps)} steps")
 
+    repro = replay.reproducibility
+    reproducible = bool(repro.input_sha256) and bool(repro.python_version) and repro.n_steps >= 3
+    add(
+        "result_is_reproducible",
+        reproducible,
+        f"input_sha256={repro.input_sha256 or '(missing)'}, py={repro.python_version or '(missing)'}, steps={repro.n_steps}",
+    )
+
     return score(checks)

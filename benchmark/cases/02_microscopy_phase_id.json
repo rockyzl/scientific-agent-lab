@@ -1,0 +1,15 @@
+{
+  "id": "microscopy_phase_id_incomplete",
+  "question": "Which crystalline phase is present in this STEM region?",
+  "domain": "microscopy",
+  "observations": [
+    {"name": "lattice_spacing_nm", "value": 0.24, "kind": "measurement", "confidence": 0.9, "source": "stem_fft"},
+    {"name": "local_symmetry", "value": "hexagonal", "kind": "measurement", "confidence": 0.6, "source": "fft"}
+  ],
+  "required": [
+    {"name": "lattice_spacing_nm", "kind": "measurement", "why": "primary phase fingerprint"},
+    {"name": "composition", "kind": "measurement", "why": "EDS composition disambiguates candidate phases"},
+    {"name": "reference_match", "kind": "literature", "why": "match against a reference diffraction database"}
+  ],
+  "expect": {"min_missing": 2, "next_action_in": ["measure_again"], "max_confidence": 0.5}
+}
