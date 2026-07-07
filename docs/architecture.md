@@ -39,8 +39,9 @@ applied to scientific reasoning.
 ## Extensibility
 
 - **Skills** (`skills/`) are pluggable capabilities. v0 ships a real offline
-  `literature` retrieval (stdlib TF-IDF over a curated knowledge base) and a still-mocked
-  `image_stub`; a real vision model replaces the latter without touching the spine.
+  `literature` retrieval (stdlib TF-IDF over a curated knowledge base) and a `vision`
+  hook that ships no model — rather than fabricate image features it returns none, so
+  they surface as missing evidence. A real vision model plugs in without touching the spine.
 - **Instruments / tools** become connectors later (Phase 3: MCP-compatible). The spine
   never needs to know whether evidence came from a microscope, a database, or a
   simulation — only its `EvidenceKind` and confidence.

@@ -30,3 +30,18 @@ def test_workflow_recommends_measurement_when_gap_exists():
     report, _ = _report()
     # a required measurement is missing -> agent must not ACCEPT
     assert report.recommended_next_measurement.action == NextAction.MEASURE_AGAIN
+
+
+def test_image_only_input_invents_no_features():
+    # no vision model configured -> the pipeline must NOT fabricate observations;
+    # required evidence is then honestly missing and it must not accept.
+    inp = ScientificInput.from_dict({
+        "question": "What phase is in this image?",
+        "domain": "microscopy",
+        "image_ref": "region.tif",
+        "required": [{"name": "phase_id", "kind": "measurement", "why": "identify the phase"}],
+    })
+    report, _ = run_workflow(inp)
+    assert report.observed_features == []
+    assert report.recommended_next_measurement.action == NextAction.MEASURE_AGAIN
+    assert any(m.name == "phase_id" for m in report.missing_evidence)

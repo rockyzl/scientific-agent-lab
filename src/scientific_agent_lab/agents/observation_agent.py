@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from ..schemas import ObservedFeature, ScientificInput
-from ..skills.image_stub import features_from_image
+from ..skills.vision import features_from_image
 
 
 def observe(inp: ScientificInput) -> list[ObservedFeature]:

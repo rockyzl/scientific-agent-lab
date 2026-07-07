@@ -39,7 +39,7 @@ def _reproducibility(
 ) -> ReproducibilityRecord:
     skills = [f"literature@{__version__}:offline-tfidf-kb"]
     if not inp.observations and inp.image_ref:
-        skills.insert(0, f"image_stub@{__version__}:mock")
+        skills.insert(0, f"vision@{__version__}:not-configured")
     return ReproducibilityRecord(
         input_sha256=_sha16(asdict(inp)),
         report_sha256=_sha16(report_dict),
@@ -56,7 +56,8 @@ _LIMITATIONS = (
     "This is a research prototype, not a validated scientific decision system. "
     "Interpretations are tentative and must be confirmed by a domain expert. "
     "Literature retrieval runs over a small curated offline knowledge base (not a "
-    "live literature API); image features are still mocked in this version."
+    "live literature API). This offline build ships no vision model, so image-derived "
+    "features are unavailable — reported as missing evidence, never invented."
 )
 
 

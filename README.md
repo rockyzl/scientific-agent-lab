@@ -185,7 +185,8 @@ human-in-the-loop scientific workflows. See [`docs/community-strategy.md`](docs/
 
 Research prototype. Interpretations are tentative and must be confirmed by a domain
 expert. Literature retrieval runs over a small curated offline knowledge base (not a
-live literature API); image features are still mocked in this version. Do not use for
+live literature API). This offline build ships no vision model, so image-derived
+features are unavailable — reported as missing evidence, never invented. Do not use for
 real scientific or safety decisions.
 
 ## License
