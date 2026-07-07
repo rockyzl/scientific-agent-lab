@@ -1,0 +1,227 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>scientific-agent-lab — local live demo</title>
+<style>
+  :root{
+    --paper:#eef1f4;--card:#fff;--card-2:#f4f7f9;--ink:#141a1f;--ink-2:#3b464e;--muted:#6b7780;--muted-2:#95a0a8;
+    --line:#dbe2e7;--line-strong:#c6d0d7;--accent:#0a6b74;--accent-deep:#083f45;--accent-soft:#dcecee;
+    --pass:#2f8f5b;--pass-soft:#e3f2e9;--warn:#b9791b;--warn-soft:#f6ecd8;--fail:#c0392b;--lit:#4f5bd5;--lit-soft:#e6e8fb;
+    --mono:ui-monospace,"SFMono-Regular","JetBrains Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased;
+    background-image:linear-gradient(var(--line) 1px,transparent 1px);background-size:100% 46px;background-position:0 -1px}
+  .wrap{max-width:940px;margin:0 auto;padding:34px 22px 72px}
+  a{color:var(--accent)}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-deep)}
+  h1{font-size:clamp(24px,4vw,36px);letter-spacing:-.02em;font-weight:680;margin:9px 0 0;text-wrap:balance;line-height:1.1}
+  .thesis{color:var(--ink-2);font-size:15px;margin:11px 0 0;max-width:66ch}
+  .thesis b{color:var(--ink);font-weight:640}
+  .local{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:12px}
+  .local b{color:var(--accent-deep)}
+  .bar{background:var(--card);border:1px solid var(--line);border-radius:13px;margin-top:20px;padding:14px 16px}
+  .bar-k{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+  .cases{display:flex;flex-wrap:wrap;gap:8px;margin-top:9px}
+  .case{flex:1 1 210px;text-align:left;background:var(--card-2);border:1px solid var(--line);border-radius:10px;padding:10px 13px;cursor:pointer;transition:.13s;font-family:inherit}
+  .case:hover{border-color:var(--line-strong)}
+  .case.on{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent)}
+  .case .cq{font-size:12.5px;color:var(--ink);font-weight:560;line-height:1.35}
+  .case .cd{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:5px}
+  .edit-k{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:14px 0 6px;display:flex;justify-content:space-between;align-items:center}
+  .edit-k .reset{cursor:pointer;color:var(--accent);text-transform:none;letter-spacing:0}
+  textarea{width:100%;min-height:150px;font-family:var(--mono);font-size:12px;line-height:1.5;color:var(--ink);
+    background:var(--card-2);border:1px solid var(--line-strong);border-radius:9px;padding:11px 13px;resize:vertical}
+  textarea:focus{outline:2px solid var(--accent);outline-offset:1px}
+  .run-row{display:flex;align-items:center;gap:13px;margin-top:13px;flex-wrap:wrap}
+  .run{font-family:var(--mono);font-size:13px;font-weight:600;color:#fff;background:var(--accent);border:1px solid var(--accent);border-radius:9px;padding:9px 18px;cursor:pointer;transition:.13s}
+  .run:hover{background:var(--accent-deep)}.run:disabled{opacity:.5;cursor:default}
+  .run-note{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+  .run-note.err{color:var(--fail)}
+
+  .stage-wrap{margin-top:24px}
+  .stage-h{font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+  .flow{border-left:2px solid var(--line)}
+  .node{position:relative;padding:0 0 6px 24px;margin-bottom:13px;opacity:.32;transition:opacity .4s}
+  .node.on{opacity:1}
+  .node::before{content:"";position:absolute;left:-8px;top:4px;width:13px;height:13px;border-radius:3px;background:var(--card);border:2px solid var(--line-strong);transition:.3s}
+  .node.live::before{background:var(--accent);border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft);animation:pulse 1.05s ease-in-out infinite}
+  .node.done::before{background:var(--accent);border-color:var(--accent)}
+  @keyframes pulse{50%{box-shadow:0 0 0 7px transparent}}
+  @media(prefers-reduced-motion:reduce){.node.live::before{animation:none}}
+  .n-top{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+  .n-idx{font-family:var(--mono);font-size:11px;color:var(--accent);font-weight:700}
+  .n-agent{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-weight:600}
+  .n-role{font-size:12.5px;color:var(--muted)}
+  .n-out{margin-top:6px;font-size:13px;color:var(--ink-2)}.n-out b{color:var(--ink);font-weight:600}
+
+  .verdict{margin-top:24px;border-radius:14px;padding:17px 20px;display:none;border:1px solid;position:relative;overflow:hidden}
+  .verdict.show{display:block}
+  .verdict::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px}
+  .verdict.accept{background:var(--pass-soft);border-color:#bfe0cd}.verdict.accept::before{background:var(--pass)}
+  .verdict.again{background:var(--warn-soft);border-color:#e7d3aa}.verdict.again::before{background:var(--warn)}
+  .v-k{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .v-verd{font-size:22px;font-weight:700;letter-spacing:-.01em;margin-top:3px;display:flex;align-items:center;gap:11px;flex-wrap:wrap}
+  .verdict.accept .v-verd{color:#1f6b41}.verdict.again .v-verd{color:#8a5811}
+  .v-conf{font-family:var(--mono);font-size:12px;font-weight:600;padding:4px 12px;border-radius:8px;background:#fff;border:1px solid currentColor;white-space:nowrap;line-height:1.25}
+  .v-why{font-size:14px;color:var(--ink-2);margin-top:6px;max-width:74ch}
+
+  .report{margin-top:22px;display:none;flex-direction:column;gap:14px}
+  .report.show{display:flex}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:15px 17px}
+  .p-h{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px;margin-bottom:11px}
+  .p-h .cnt{color:var(--accent-deep);background:var(--accent-soft);border-radius:999px;padding:1px 8px;font-size:10px}
+  .item{padding:9px 0;border-top:1px solid var(--line)}.item:first-of-type{border-top:0;padding-top:2px}
+  .ev-claim{font-size:13.5px;color:var(--ink);line-height:1.45}
+  .ev-meta{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-top:5px}
+  .kind{font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:5px}
+  .kind.measurement{color:var(--accent-deep);background:var(--accent-soft)}.kind.prediction{color:#8a5811;background:var(--warn-soft)}
+  .kind.inference{color:#3b464e;background:#e7ecef}.kind.literature{color:#3a44b0;background:var(--lit-soft)}
+  .conf{font-family:var(--mono);font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .src{font-family:var(--mono);font-size:10.5px;color:var(--muted-2);word-break:break-all}
+  .caveat{font-size:11.5px;color:var(--warn);margin-top:3px;font-style:italic}
+  .sev{font-family:var(--mono);font-size:9.5px;font-weight:700;text-transform:uppercase;padding:1px 6px;border-radius:4px}
+  .sev.high{color:#a13226;background:#f6e0dc}.sev.medium{color:#8a5811;background:var(--warn-soft)}.sev.low{color:var(--muted);background:#e7ecef}
+  .gap{display:flex;gap:9px;align-items:baseline}
+  .gap .gn{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-weight:600}
+  .gap .gk{font-family:var(--mono);font-size:9.5px;color:var(--warn);text-transform:uppercase;border:1px solid #e7d3aa;border-radius:4px;padding:0 5px}
+  .gap .gw{font-size:12.5px;color:var(--muted)}
+  .chk{display:flex;gap:9px;align-items:flex-start;font-size:13px;color:var(--ink-2)}
+  .chk .box{flex:0 0 auto;width:14px;height:14px;border:1.5px solid var(--line-strong);border-radius:3px;margin-top:3px}
+  .chk .why{color:var(--muted);font-size:11.5px}
+  .eval{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:15px 17px}
+  .eval-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:11px}
+  .eval-score{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--pass);background:var(--pass-soft);border:1px solid #bfe0cd;border-radius:999px;padding:3px 11px}
+  .contracts{display:grid;grid-template-columns:1fr 1fr;gap:5px 16px}
+  .contract{display:flex;align-items:baseline;gap:8px;font-size:12.5px;padding:2px 0}
+  .contract .tick{font-weight:700;font-family:var(--mono)}.contract .tick.ok{color:var(--pass)}.contract .tick.no{color:var(--fail)}
+  .contract .cn{font-family:var(--mono);font-size:11.5px;color:var(--ink)}.contract .cdt{color:var(--muted);font-size:11px}
+  .repro{margin-top:14px;background:var(--accent-deep);color:#cfe6e8;border-radius:12px;padding:15px 17px;font-family:var(--mono);font-size:11.5px;line-height:1.75}
+  .repro .rk{color:#7fb5ba;text-transform:uppercase;letter-spacing:.08em;font-size:10px}
+  .repro .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:3px}.repro .hx{color:#fff}
+  .repro .det{color:#9fd6c4;margin-top:9px;border-top:1px solid rgba(255,255,255,.14);padding-top:9px}
+  .foot{margin-top:22px;font-size:12px;color:var(--muted);max-width:76ch;line-height:1.6}.foot b{color:var(--ink-2)}
+  @media(max-width:680px){.grid2,.contracts{grid-template-columns:1fr}}
+</style></head><body>
+<div class="wrap">
+  <span class="eyebrow">scientific-agent-lab · local live demo</span>
+  <h1>When can you trust the result?</h1>
+  <p class="thesis">This layer separates <b>evidence from assumptions</b>, keeps <b>uncertainty explicit</b>, names what's <b>missing</b>, recommends a <b>justified next step</b>, and ships a <b>reproducible</b> trace. Five deterministic agents — no LLM, no API keys, offline. Edit the input below and run your own case.</p>
+  <p class="local">running <b>live</b> against your local pipeline · <b data-src>localhost</b></p>
+
+  <div class="bar">
+    <div class="bar-k">1 — pick a preset case (or edit the input)</div>
+    <div class="cases" data-cases></div>
+    <div class="edit-k"><span>2 — scientific input (editable JSON)</span><span class="reset" data-reset>↺ reset to preset</span></div>
+    <textarea data-input spellcheck="false"></textarea>
+    <div class="run-row">
+      <button class="run" data-run>▶ Run the pipeline</button>
+      <span class="run-note" data-note>5 agents · deterministic · offline</span>
+    </div>
+  </div>
+
+  <div class="stage-wrap">
+    <div class="stage-h">the reasoning pipeline (live replay trace)</div>
+    <div class="flow" data-flow></div>
+  </div>
+  <div class="verdict" data-verdict></div>
+  <div class="report" data-report></div>
+
+  <p class="foot"><b>How to read this.</b> Every claim is tagged by provenance — <span class="kind measurement">measurement</span>, <span class="kind prediction">prediction</span>, <span class="kind literature">literature</span> (a real offline TF-IDF search over a curated knowledge base). A required <i>measurement</i> met only by a <i>prediction</i> is flagged, not accepted; a missing required measurement forces <b>measure again</b>, never “accept”. Research prototype — an evaluation &amp; reproducibility layer, not a validated decision system.</p>
+</div>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s);
+const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;};
+const esc=s=>String(s==null?"":s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
+const STEPS=["observation_agent","evidence_agent","hypothesis_agent","planner_agent","reviewer_agent"];
+const AGENT_ROLE={observation_agent:"types raw input into observed features (measurement vs prediction)",evidence_agent:"evidence vs assumptions · gaps · literature retrieval",hypothesis_agent:"hedged interpretations, each tied to its evidence",planner_agent:"recommends the next action from gaps + confidence",reviewer_agent:"human-review checklist + ranked uncertainty"};
+const casesEl=$("[data-cases]"),flowEl=$("[data-flow]"),verdEl=$("[data-verdict]"),repEl=$("[data-report]"),
+  runBtn=$("[data-run]"),noteEl=$("[data-note]"),ta=$("[data-input]"),srcEl=$("[data-src]");
+srcEl.textContent=location.host;
+let CASES={},cur=null,busy=false;
+
+async function loadCases(){
+  try{CASES=await (await fetch("/cases")).json();}catch(e){CASES={};}
+  casesEl.innerHTML="";
+  const ids=Object.keys(CASES);
+  ids.forEach(id=>{
+    const c=CASES[id];
+    const b=el("button","case"+(id===cur?" on":""),`<div class="cq">${esc(c.question||id)}</div><div class="cd">${esc(c.domain||"")}</div>`);
+    b.onclick=()=>{if(busy)return;cur=id;selectCase(id);};
+    casesEl.appendChild(b);
+  });
+  if(ids.length){cur=ids[0];selectCase(ids[0]);}
+}
+function selectCase(id){
+  [...casesEl.children].forEach((b,i)=>b.classList.toggle("on",Object.keys(CASES)[i]===id));
+  ta.value=JSON.stringify(CASES[id],null,2);
+  resetView();
+}
+$("[data-reset]").onclick=()=>{if(cur&&CASES[cur]){ta.value=JSON.stringify(CASES[cur],null,2);}};
+
+function renderFlow(){
+  flowEl.innerHTML="";
+  STEPS.forEach((ag,i)=>{
+    const n=el("div","node","");n.dataset.i=i;
+    n.innerHTML=`<div class="n-top"><span class="n-idx">${i+1}</span><span class="n-agent">${ag}()</span><span class="n-role">${AGENT_ROLE[ag]}</span></div><div class="n-out" data-nout></div>`;
+    flowEl.appendChild(n);
+  });
+}
+function resetView(){renderFlow();verdEl.className="verdict";verdEl.innerHTML="";repEl.className="report";repEl.innerHTML="";noteEl.className="run-note";noteEl.textContent="5 agents · deterministic · offline";}
+function setNode(i,cls){const n=flowEl.querySelector(`.node[data-i="${i}"]`);if(n){n.classList.remove("live","done","on");if(cls){n.classList.add("on");n.classList.add(cls);}}}
+function agentSummary(s){const o=s.output;switch(s.agent){
+  case "observation_agent":return `Typed <b>${o.length}</b> observed feature(s) with provenance.`;
+  case "evidence_agent":return `Built <b>${o.evidence.length}</b> evidence item(s), surfaced <b>${o.assumptions.length}</b> assumption(s), flagged <b>${o.missing_evidence.length}</b> gap(s).`;
+  case "hypothesis_agent":return `Formed <b>${o.length}</b> hedged interpretation(s), each linked to its evidence.`;
+  case "planner_agent":return `Recommended <b>${o.action.replace("_"," ")}</b>${o.target?` → <b>${esc(o.target)}</b>`:""}.`;
+  case "reviewer_agent":return `Wrote <b>${o.human_review_checklist.length}</b> review question(s) and <b>${o.uncertainty.length}</b> uncertainty note(s).`;
+  default:return "";}}
+function evItem(e){return `<div class="item"><div class="ev-claim">${esc(e.claim)}</div><div class="ev-meta"><span class="kind ${e.kind}">${e.kind}</span><span class="conf">conf ${e.confidence}</span><span class="src">${esc(e.source)}</span></div>${e.caveats?`<div class="caveat">${esc(e.caveats)}</div>`:""}</div>`;}
+function panel(h,cnt,body){return `<div class="panel"><div class="p-h">${h}${cnt!=null?`<span class="cnt">${cnt}</span>`:""}</div>${body}</div>`;}
+
+function renderReport(D){
+  const r=D.report,ev=D.eval,rp=D.replay.reproducibility,rec=r.recommended_next_measurement;
+  const accept=rec.action==="accept";
+  verdEl.className="verdict show "+(accept?"accept":"again");
+  verdEl.innerHTML=`<div class="v-k">recommended action · confidence ${r.confidence_level}</div><div class="v-verd">${accept?"✓ Accept":"↻ Measure again"}${rec.target?` — ${esc(rec.target)}`:""}<span class="v-conf">conf ${r.confidence_level}</span></div><div class="v-why">${esc(rec.rationale)}</div>`;
+  const evidence=panel("Evidence",r.evidence.length,r.evidence.map(evItem).join(""));
+  const assumptions=panel("Assumptions",r.assumptions.length,r.assumptions.map(a=>`<div class="item"><div class="ev-claim">${esc(a.statement)}</div><div class="ev-meta"><span class="src">basis: ${esc(a.basis)}</span><span class="conf">conf ${a.confidence}</span></div></div>`).join(""));
+  const uncertainty=panel("Uncertainty",r.uncertainty.length,r.uncertainty.map(u=>`<div class="item"><div class="ev-meta" style="margin-top:0"><span class="sev ${u.severity}">${u.severity}</span></div><div class="ev-claim" style="margin-top:4px">${esc(u.note)}</div></div>`).join("")||`<div class="item"><span class="conf">none flagged</span></div>`);
+  const missing=panel("Missing evidence — the gaps",r.missing_evidence.length,r.missing_evidence.length?r.missing_evidence.map(m=>`<div class="item"><div class="gap"><span class="gn">${esc(m.name)}</span><span class="gk">${esc(m.expected_kind)}</span></div><div class="gw">${esc(m.why_needed)}</div></div>`).join(""):`<div class="item"><span class="conf">no required evidence missing — complete</span></div>`);
+  const review=panel("Human-review checklist",r.human_review_checklist.length,r.human_review_checklist.map(c=>`<div class="item"><div class="chk"><span class="box"></span><span>${esc(c.question)}<br><span class="why">${esc(c.why)}</span></span></div></div>`).join(""));
+  const contracts=`<div class="eval"><div class="eval-top"><div class="p-h" style="margin:0">Evaluation — did it reason responsibly?</div><span class="eval-score">${ev.passed}/${ev.total} contracts · score ${ev.score}</span></div><div class="contracts">`+ev.contracts.map(c=>`<div class="contract"><span class="tick ${c.passed?"ok":"no"}">${c.passed?"✓":"✗"}</span><span><span class="cn">${esc(c.name)}</span> <span class="cdt">${esc(c.detail)}</span></span></div>`).join("")+`</div></div>`;
+  const repro=`<div class="repro"><span class="rk">reproducibility record</span><div class="row"><span>input_sha256 <span class="hx">${esc(rp.input_sha256)}</span></span><span>report_sha256 <span class="hx">${esc(rp.report_sha256)}</span></span></div><div class="row"><span>python <span class="hx">${esc(rp.python_version)}</span></span><span>steps <span class="hx">${rp.n_steps}</span></span><span>skills <span class="hx">${esc((rp.skills_used||[]).join(", "))}</span></span></div><div class="det">↺ run the same input again → identical report_sha256. Determinism is what makes the reasoning auditable, not just plausible.</div></div>`;
+  repEl.className="report show";
+  repEl.innerHTML=evidence+`<div class="grid2">${assumptions}${uncertainty}</div>`+`<div class="grid2">${missing}${review}</div>`+contracts+repro;
+}
+
+async function run(){
+  if(busy)return;
+  let input;
+  try{input=JSON.parse(ta.value);}catch(e){noteEl.className="run-note err";noteEl.textContent="input is not valid JSON: "+e.message;return;}
+  busy=true;runBtn.disabled=true;runBtn.textContent="running…";
+  verdEl.className="verdict";verdEl.innerHTML="";repEl.className="report";repEl.innerHTML="";renderFlow();
+  noteEl.className="run-note";noteEl.textContent="calling local pipeline…";
+  let D;
+  try{
+    const res=await fetch("/run",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({input})});
+    D=await res.json();
+    if(!res.ok||D.error){noteEl.className="run-note err";noteEl.textContent=D.error||("HTTP "+res.status);busy=false;runBtn.disabled=false;runBtn.textContent="▶ Run the pipeline";return;}
+  }catch(e){noteEl.className="run-note err";noteEl.textContent="could not reach local server: "+e.message;busy=false;runBtn.disabled=false;runBtn.textContent="▶ Run the pipeline";return;}
+  const gap=reduce?0:500;
+  for(let i=0;i<STEPS.length;i++){
+    setNode(i,"live");
+    flowEl.querySelector(`.node[data-i="${i}"] [data-nout]`).innerHTML=agentSummary(D.replay.steps[i]);
+    noteEl.textContent=`step ${i+1}/5 · ${STEPS[i]}`;
+    await wait(gap);setNode(i,"done");
+  }
+  noteEl.textContent="done · this is the real output";
+  await wait(reduce?0:150);renderReport(D);
+  runBtn.disabled=false;runBtn.textContent="▶ Run again";busy=false;
+}
+runBtn.onclick=run;
+renderFlow();loadCases();
+</script></body></html>

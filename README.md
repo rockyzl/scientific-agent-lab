@@ -89,6 +89,16 @@ This writes `outputs/demo_report.md`, `demo_report.json`, `replay_record.json`, 
 `evaluation_result.json`. See a committed example in
 [`examples/materials_demo/sample_output.md`](examples/materials_demo/sample_output.md).
 
+### Local live demo (browser)
+
+A stdlib-only server that runs the pipeline live — pick a preset case or edit the
+JSON input and watch the five agents produce the auditable report, evaluation
+scorecard, and reproducibility record:
+
+```bash
+python demo/serve.py            # → http://localhost:8000  (no dependencies)
+```
+
 ## Evaluation contracts (the spine)
 
 The harness checks whether a report reasoned responsibly:
