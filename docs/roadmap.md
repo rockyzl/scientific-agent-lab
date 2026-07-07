@@ -6,8 +6,10 @@ Everything else is layered on top without redesigning the core.
 - **Phase 0 — spine (now).** Schemas, five-step workflow, replay record, evaluation
   contracts, Markdown/JSON reports, one runnable demo. Mocked image + literature skills.
   Zero dependencies.
-- **Phase 1 — real literature retrieval.** Replace `literature_stub` with arXiv / Crossref
-  / Semantic Scholar; attach real citations as `literature` evidence.
+- **Phase 1 — real literature retrieval (done, offline).** `literature_stub` replaced by
+  a real stdlib TF-IDF retrieval over a curated domain knowledge base — kept offline and
+  deterministic to preserve reproducibility. Optional live connectors (arXiv / Crossref /
+  Semantic Scholar) can attach real citations later without touching the spine.
 - **Phase 2 — scientific database connectors.** Materials Project, PubChem, molecular
   property tools; predicted values labelled `prediction`, DB facts labelled `literature`.
 - **Phase 3 — MCP-compatible tool connectors.** Instruments and tools exposed as

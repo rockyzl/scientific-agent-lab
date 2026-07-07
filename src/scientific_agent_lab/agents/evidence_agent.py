@@ -16,7 +16,7 @@ from ..schemas import (
     RequiredEvidence,
     ScientificInput,
 )
-from ..skills.literature_stub import search as literature_search
+from ..skills.literature import search as literature_search
 
 
 def gather(
@@ -73,6 +73,7 @@ def gather(
                 )
             )
 
-    # literature hook (mocked in v0) — an honestly-labelled retrieval attempt
-    evidence.extend(literature_search(inp.question, k=1))
+    # literature hook — real offline TF-IDF retrieval over a curated domain
+    # knowledge base (deterministic; see skills/literature.py).
+    evidence.extend(literature_search(inp.question, inp.domain, k=2))
     return evidence, assumptions, missing, weaknesses

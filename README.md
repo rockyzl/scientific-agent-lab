@@ -155,8 +155,10 @@ tools, evidence, and human judgment.
 
 See [`docs/roadmap.md`](docs/roadmap.md). Briefly:
 
-- **Phase 0 (now):** evaluation spine + mocked skills, runnable end-to-end.
-- **Phase 1:** real literature retrieval (arXiv / Crossref / Semantic Scholar).
+- **Phase 0 (now):** evaluation spine, runnable end-to-end.
+- **Phase 1 (done):** real **offline** literature retrieval — stdlib TF-IDF over a
+  curated domain knowledge base (kept offline/deterministic by design; optional live
+  arXiv / Crossref / Semantic Scholar connectors can be added later).
 - **Phase 2:** scientific database connectors (Materials Project, PubChem, property tools).
 - **Phase 3:** MCP-compatible tool connectors (instruments/tools as connectors).
 - **Phase 4:** digital-twin adapters (microscopy / simulation).
@@ -172,8 +174,9 @@ human-in-the-loop scientific workflows. See [`docs/community-strategy.md`](docs/
 ## Disclaimer
 
 Research prototype. Interpretations are tentative and must be confirmed by a domain
-expert. Image features and literature retrieval are mocked in this version. Do not use
-for real scientific or safety decisions.
+expert. Literature retrieval runs over a small curated offline knowledge base (not a
+live literature API); image features are still mocked in this version. Do not use for
+real scientific or safety decisions.
 
 ## License
 

@@ -37,7 +37,7 @@ def _reproducibility(
     evidence: list[EvidenceItem],
     report_dict: dict,
 ) -> ReproducibilityRecord:
-    skills = [f"literature_stub@{__version__}:mock"]
+    skills = [f"literature@{__version__}:offline-tfidf-kb"]
     if not inp.observations and inp.image_ref:
         skills.insert(0, f"image_stub@{__version__}:mock")
     return ReproducibilityRecord(
@@ -55,7 +55,8 @@ def _reproducibility(
 _LIMITATIONS = (
     "This is a research prototype, not a validated scientific decision system. "
     "Interpretations are tentative and must be confirmed by a domain expert. "
-    "Image features and literature retrieval are mocked in this version."
+    "Literature retrieval runs over a small curated offline knowledge base (not a "
+    "live literature API); image features are still mocked in this version."
 )
 
 
